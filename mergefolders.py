@@ -1,7 +1,7 @@
 import os
 import shutil
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 # Function to merge folders
 def merge_folders(source_folders, dest_folder):
@@ -32,30 +32,55 @@ def merge_folders(source_folders, dest_folder):
 
 # Function to select folders
 def select_folders():
-    folder_paths = filedialog.askdirectory(multiple=True)
-    return folder_paths
+    folder_path = filedialog.askdirectory(title="Select a Folder to Merge")
+    if folder_path:
+        selected_folders.append(folder_path)
+        update_folders_label()
+
+# Function to select the destination folder
+def select_destination_folder():
+    return filedialog.askdirectory(title="Select Destination Folder")
 
 # Function to start merging process
 def start_merge():
-    source_folders = select_folders()
-    if source_folders:
-        source_folder_name = os.path.basename(source_folders[0])
-        destination_folder = filedialog.askdirectory(initialdir="/", title="Select Destination Folder")
-        destination_folder = os.path.join(destination_folder, f"{source_folder_name}_merged")
-        if not os.path.exists(destination_folder):
-            os.makedirs(destination_folder)
-        merge_folders(source_folders, destination_folder)
-        print("Success!")
-        tk.messagebox.showinfo("Success", "Folders merged successfully!")
+    if not selected_folders:
+        messagebox.showwarning("Warning", "Please select folders to merge.")
+        return
+    destination_folder = select_destination_folder()
+    if not destination_folder:
+        messagebox.showwarning("Warning", "Please select a destination folder.")
+        return
+    source_folder_name = os.path.basename(selected_folders[0])
+    destination_folder = os.path.join(destination_folder, f"{source_folder_name}_merged")
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+    merge_folders(selected_folders, destination_folder)
+    print("Success!")
+    messagebox.showinfo("Success", "Folders merged successfully!")
+
+# Function to update the label with selected folders
+def update_folders_label():
+    folders_label.config(text="\n".join(selected_folders))
+
+# Global variable to store selected folders
+selected_folders = []
 
 # Set up the GUI
 root = tk.Tk()
 root.title("Folder Merger")
-root.geometry("300x200")
+root.geometry("400x300")
+
+# Add a button to select folders
+select_button = tk.Button(root, text="Add Folder to Merge", command=select_folders)
+select_button.pack(pady=10)
+
+# Label to show selected folders
+folders_label = tk.Label(root, text="No folders selected.", justify="left")
+folders_label.pack(pady=10)
 
 # Add a button to start the merge process
-merge_button = tk.Button(root, text="Select Folders to Merge", command=start_merge)
-merge_button.pack(expand=True)
+merge_button = tk.Button(root, text="Start Merge", command=start_merge)
+merge_button.pack(pady=10)
 
 # Run the GUI event loop
 root.mainloop()
