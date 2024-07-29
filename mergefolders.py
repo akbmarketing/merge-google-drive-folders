@@ -1,18 +1,9 @@
 import os
 import shutil
+import tkinter as tk
+from tkinter import filedialog
 
-
-folders_to_merge = [
-    "/Users/andrewbourguignon/Downloads/drive-download-20240728T194731Z-001",
-    "/Users/andrewbourguignon/Downloads/drive-download-20240728T194731Z-002",
-]
-destination_folder = '/Users/andrewbourguignon/Downloads/Merged Emu GDrive'
-
-
-if not os.path.exists(destination_folder):
-    os.makedirs(destination_folder)
-
-
+# Function to merge folders
 def merge_folders(source_folders, dest_folder):
     for folder in source_folders:
         for item in os.listdir(folder):
@@ -39,7 +30,32 @@ def merge_folders(source_folders, dest_folder):
                         new_destination_path = os.path.join(dest_folder, new_name)
                     shutil.copy2(source_path, new_destination_path)
 
-# Merge the folders
-merge_folders(folders_to_merge, destination_folder)
+# Function to select folders
+def select_folders():
+    folder_paths = filedialog.askdirectory(multiple=True)
+    return folder_paths
 
-print("Success!")
+# Function to start merging process
+def start_merge():
+    source_folders = select_folders()
+    if source_folders:
+        source_folder_name = os.path.basename(source_folders[0])
+        destination_folder = filedialog.askdirectory(initialdir="/", title="Select Destination Folder")
+        destination_folder = os.path.join(destination_folder, f"{source_folder_name}_merged")
+        if not os.path.exists(destination_folder):
+            os.makedirs(destination_folder)
+        merge_folders(source_folders, destination_folder)
+        print("Success!")
+        tk.messagebox.showinfo("Success", "Folders merged successfully!")
+
+# Set up the GUI
+root = tk.Tk()
+root.title("Folder Merger")
+root.geometry("300x200")
+
+# Add a button to start the merge process
+merge_button = tk.Button(root, text="Select Folders to Merge", command=start_merge)
+merge_button.pack(expand=True)
+
+# Run the GUI event loop
+root.mainloop()
