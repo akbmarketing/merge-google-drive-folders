@@ -1,4 +1,5 @@
 import os
+import os.path
 import shutil
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -32,7 +33,10 @@ def merge_folders(source_folders, dest_folder):
 
 # Function to select folders
 def select_folders():
-    folder_path = filedialog.askdirectory(title="Select a Folder to Merge")
+    # Get the path to the Downloads folder
+    downloads_path = os.path.expanduser("~/Downloads")
+    
+    folder_path = filedialog.askdirectory(title="Select a Folder to Merge", initialdir=downloads_path)
     if folder_path:
         selected_folders.append(folder_path)
         update_folders_label()
@@ -56,7 +60,7 @@ def start_merge():
         os.makedirs(destination_folder)
     merge_folders(selected_folders, destination_folder)
     print("Success!")
-    messagebox.showinfo("Success", "Folders merged successfully!")
+    messagebox.showinfo("Success", "Merged successfully!")
 
 # Function to update the label with selected folders
 def update_folders_label():
@@ -68,19 +72,29 @@ selected_folders = []
 # Set up the GUI
 root = tk.Tk()
 root.title("Folder Merger")
-root.geometry("400x300")
+root.geometry("600x300")
+
+# Create main frame
+main_frame = tk.Frame(root)
+main_frame.pack(expand=True, fill=tk.BOTH)
+
+# Add top spacer
+tk.Frame(main_frame).pack(expand=True)
 
 # Add a button to select folders
-select_button = tk.Button(root, text="Add Folder to Merge", command=select_folders)
+select_button = tk.Button(main_frame, text="Add Folder to Merge", command=select_folders)
 select_button.pack(pady=10)
 
 # Label to show selected folders
-folders_label = tk.Label(root, text="No folders selected.", justify="left")
+folders_label = tk.Label(main_frame, text="No folders selected.", justify="left")
 folders_label.pack(pady=10)
 
 # Add a button to start the merge process
-merge_button = tk.Button(root, text="Start Merge", command=start_merge)
+merge_button = tk.Button(main_frame, text="Start Merge", command=start_merge)
 merge_button.pack(pady=10)
+
+# Add bottom spacer
+tk.Frame(main_frame).pack(expand=True)
 
 # Run the GUI event loop
 root.mainloop()
