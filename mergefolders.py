@@ -33,9 +33,7 @@ def merge_folders(source_folders, dest_folder):
 
 # Function to select folders
 def select_folders():
-    # Get the path to the Downloads folder
     downloads_path = os.path.expanduser("~/Downloads")
-    
     folder_path = filedialog.askdirectory(title="Select a Folder to Merge", initialdir=downloads_path)
     if folder_path:
         selected_folders.append(folder_path)
@@ -66,6 +64,12 @@ def start_merge():
 def update_folders_label():
     folders_label.config(text="\n".join(selected_folders))
 
+# Function to reset the selected folders
+def reset_folders():
+    global selected_folders
+    selected_folders = []
+    update_folders_label()
+
 # Global variable to store selected folders
 selected_folders = []
 
@@ -82,7 +86,7 @@ main_frame.pack(expand=True, fill=tk.BOTH)
 tk.Frame(main_frame).pack(expand=True)
 
 # Add a button to select folders
-select_button = tk.Button(main_frame, text="Add Folder to Merge", command=select_folders)
+select_button = tk.Button(main_frame, text="Add Folders to Merge", command=select_folders)
 select_button.pack(pady=10)
 
 # Label to show selected folders
@@ -92,6 +96,10 @@ folders_label.pack(pady=10)
 # Add a button to start the merge process
 merge_button = tk.Button(main_frame, text="Start Merge", command=start_merge)
 merge_button.pack(pady=10)
+
+# Add a button to reset the selected folders
+reset_button = tk.Button(main_frame, text="Reset Folders", command=reset_folders)
+reset_button.pack(pady=10)
 
 # Add bottom spacer
 tk.Frame(main_frame).pack(expand=True)
