@@ -2,9 +2,8 @@ import os
 import os.path
 import shutil
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 
-# Function to merge folders
 def merge_folders(source_folders, dest_folder):
     for folder in source_folders:
         for item in os.listdir(folder):
@@ -20,7 +19,6 @@ def merge_folders(source_folders, dest_folder):
                 if not os.path.exists(destination_path):
                     shutil.copy2(source_path, destination_path)
                 else:
-                    # Rename and move if a file with the same name exists
                     base, extension = os.path.splitext(item)
                     i = 1
                     new_name = f"{base}_{i}{extension}"
@@ -31,7 +29,6 @@ def merge_folders(source_folders, dest_folder):
                         new_destination_path = os.path.join(dest_folder, new_name)
                     shutil.copy2(source_path, new_destination_path)
 
-# Function to select folders
 def select_folders():
     downloads_path = os.path.expanduser("~/Downloads")
     folder_path = filedialog.askdirectory(title="Select a Folder to Merge", initialdir=downloads_path)
@@ -39,11 +36,9 @@ def select_folders():
         selected_folders.append(folder_path)
         update_folders_label()
 
-# Function to select the destination folder
 def select_destination_folder():
     return filedialog.askdirectory(title="Select Destination Folder")
 
-# Function to start merging process
 def start_merge():
     if not selected_folders:
         messagebox.showwarning("Warning", "Please select folders to merge.")
@@ -57,52 +52,46 @@ def start_merge():
     if not os.path.exists(destination_folder):
         os.makedirs(destination_folder)
     merge_folders(selected_folders, destination_folder)
-    print("Success!")
     messagebox.showinfo("Success", "Merged successfully!")
 
-# Function to update the label with selected folders
 def update_folders_label():
-    folders_label.config(text="\n".join(selected_folders))
+    if selected_folders:
+        folders_text = "\n".join(selected_folders)
+        folders_label.config(text=folders_text, fg="black")
+    else:
+        folders_label.config(text="No folders selected.", fg="#333")
 
-# Function to reset the selected folders
 def reset_folders():
     global selected_folders
     selected_folders = []
     update_folders_label()
 
-# Global variable to store selected folders
 selected_folders = []
 
-# Set up the GUI
 root = tk.Tk()
 root.title("Folder Merger")
-root.geometry("600x300")
+root.geometry("400x500")
 
-# Create main frame
-main_frame = tk.Frame(root)
-main_frame.pack(expand=True, fill=tk.BOTH)
+style = ttk.Style()
+style.configure('TButton', font=('Arial', 10, 'bold'), borderwidth='4')
+style.map('TButton', background=[('active', '#0099ff')])
 
-# Add top spacer
-tk.Frame(main_frame).pack(expand=True)
+main_frame = tk.Frame(root, bg="#F8F9FD")
+main_frame.pack(expand=True, fill=tk.BOTH, padx=25, pady=25)
 
-# Add a button to select folders
-select_button = tk.Button(main_frame, text="Add Folders to Merge", command=select_folders)
-select_button.pack(pady=10)
+heading = tk.Label(main_frame, text="Folder Merger", font=("Arial", 24, "bold"), fg="#1089D3", bg="#F8F9FD")
+heading.pack(pady=20)
 
-# Label to show selected folders
-folders_label = tk.Label(main_frame, text="No folders selected.", justify="left")
+select_button = ttk.Button(main_frame, text="Add Folders to Merge", command=select_folders, style='TButton')
+select_button.pack(pady=10, fill=tk.X)
+
+folders_label = tk.Label(main_frame, text="No folders selected.", justify="left", bg="#F8F9FD", wraplength=350, fg="#333")
 folders_label.pack(pady=10)
 
-# Add a button to start the merge process
-merge_button = tk.Button(main_frame, text="Start Merge", command=start_merge)
-merge_button.pack(pady=10)
+merge_button = ttk.Button(main_frame, text="Start Merge", command=start_merge, style='TButton')
+merge_button.pack(pady=10, fill=tk.X)
 
-# Add a button to reset the selected folders
-reset_button = tk.Button(main_frame, text="Reset Folders", command=reset_folders)
-reset_button.pack(pady=10)
+reset_button = ttk.Button(main_frame, text="Reset Folders", command=reset_folders, style='TButton')
+reset_button.pack(pady=10, fill=tk.X)
 
-# Add bottom spacer
-tk.Frame(main_frame).pack(expand=True)
-
-# Run the GUI event loop
 root.mainloop()
