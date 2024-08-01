@@ -66,6 +66,12 @@ def reset_folders():
     selected_folders = []
     update_folders_label()
 
+def on_enter(e):
+    e.widget['style'] = 'Hover.Custom.TButton'
+
+def on_leave(e):
+    e.widget['style'] = 'Custom.TButton'
+
 selected_folders = []
 
 root = tk.Tk()
@@ -73,8 +79,18 @@ root.title("Folder Merger")
 root.geometry("400x500")
 
 style = ttk.Style()
-style.configure('TButton', font=('Arial', 10, 'bold'), borderwidth='4')
-style.map('TButton', background=[('active', '#0099ff')])
+style.configure('Custom.TButton', 
+                font=('Arial', 10, 'bold'),
+                padding=[12, 8],
+                background='#488aec',
+                foreground='#ffffff',
+                borderwidth=0,
+                relief='flat')
+style.map('Custom.TButton', 
+          background=[('active', '#488aec')],
+          relief=[('pressed', 'flat'), ('!pressed', 'flat')])
+style.configure('Hover.Custom.TButton', 
+                background='#3a7cde')
 
 main_frame = tk.Frame(root, bg="#F8F9FD")
 main_frame.pack(expand=True, fill=tk.BOTH, padx=25, pady=25)
@@ -82,16 +98,20 @@ main_frame.pack(expand=True, fill=tk.BOTH, padx=25, pady=25)
 heading = tk.Label(main_frame, text="Folder Merger", font=("Arial", 24, "bold"), fg="#1089D3", bg="#F8F9FD")
 heading.pack(pady=20)
 
-select_button = ttk.Button(main_frame, text="Add Folders to Merge", command=select_folders, style='TButton')
+select_button = ttk.Button(main_frame, text="Add Folders to Merge", command=select_folders, style='Custom.TButton')
 select_button.pack(pady=10, fill=tk.X)
 
 folders_label = tk.Label(main_frame, text="No folders selected.", justify="left", bg="#F8F9FD", wraplength=350, fg="#333")
 folders_label.pack(pady=10)
 
-merge_button = ttk.Button(main_frame, text="Start Merge", command=start_merge, style='TButton')
+merge_button = ttk.Button(main_frame, text="Start Merge", command=start_merge, style='Custom.TButton')
 merge_button.pack(pady=10, fill=tk.X)
 
-reset_button = ttk.Button(main_frame, text="Reset Folders", command=reset_folders, style='TButton')
+reset_button = ttk.Button(main_frame, text="Reset Folders", command=reset_folders, style='Custom.TButton')
 reset_button.pack(pady=10, fill=tk.X)
+
+for btn in (select_button, merge_button, reset_button):
+    btn.bind("<Enter>", on_enter)
+    btn.bind("<Leave>", on_leave)
 
 root.mainloop()
